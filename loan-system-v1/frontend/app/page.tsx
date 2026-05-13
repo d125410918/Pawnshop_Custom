@@ -1,14 +1,15 @@
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="min-h-screen">
       <section className="max-w-2xl mx-auto px-6 py-12">
+
         <h1 className="text-4xl font-bold mb-4">
           快速資金申請
         </h1>
 
-        <p className="mb-10 text-gray-600">
-          簡單填寫資料，專人將與您聯繫。
+        <p className="text-gray-600 mb-10">
+          簡單填寫資料，專人與您聯繫
         </p>
 
         <form className="space-y-6">
@@ -114,32 +115,6 @@ export default function HomePage() {
             </select>
           </div>
 
-          <div>
-            <label className="block mb-2">目前負債</label>
-
-            <div className="space-y-2">
-              <label className="flex gap-2">
-                <input type="checkbox" />
-                信貸
-              </label>
-
-              <label className="flex gap-2">
-                <input type="checkbox" />
-                車貸
-              </label>
-
-              <label className="flex gap-2">
-                <input type="checkbox" />
-                融資
-              </label>
-
-              <label className="flex gap-2">
-                <input type="checkbox" />
-                無
-              </label>
-            </div>
-          </div>
-
           <div className="flex gap-2">
             <input type="checkbox" />
             <span>我確認資料正確並同意審核使用</span>
@@ -153,6 +128,7 @@ export default function HomePage() {
           </button>
 
         </form>
+
       </section>
     </main>
   );
