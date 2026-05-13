@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { applicationSchema, ApplicationFormData } from '@/lib/schema';
+import { applicationSchema, ApplicationFormData, DebtOption, debtOptions } from '@/lib/schema';
 
 export default function ApplicationForm() {
   const {
@@ -42,15 +42,17 @@ export default function ApplicationForm() {
 
   const debts = watch('debts') || [];
 
-  const handleDebtChange = (debt: string, checked: boolean) => {
-    const currentDebts = debts.filter(d => d !== '無');
+  const handleDebtChange = (debt: DebtOption, checked: boolean) => {
     if (debt === '無') {
       setValue('debts', checked ? ['無'] : []);
     } else {
       if (checked) {
-        setValue('debts', [...currentDebts.filter(d => d !== '無'), debt]);
+        // 添加債務，移除'無'如果存在的話
+        const newDebts = [...debts.filter(d => d !== '無' && d !== debt), debt];
+        setValue('debts', newDebts);
       } else {
-        const newDebts = currentDebts.filter(d => d !== debt);
+        // 移除債務
+        const newDebts = debts.filter(d => d !== debt);
         setValue('debts', newDebts.length === 0 ? ['無'] : newDebts);
       }
     }
@@ -202,7 +204,7 @@ export default function ApplicationForm() {
             <div>
               <h3 className="text-lg font-semibold mb-4">目前負債</h3>
               <div className="space-y-2">
-                {['信貸', '車貸', '融資', '無'].map((debt) => (
+                {debtOptions.map((debt) => (
                   <label key={debt} className="flex items-center">
                     <input
                       type="checkbox"
