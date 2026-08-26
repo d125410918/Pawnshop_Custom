@@ -1,0 +1,1 @@
+Trigger PR-based OpenSpiel 2.0.2 CI for Banqi R4 acceptance.
