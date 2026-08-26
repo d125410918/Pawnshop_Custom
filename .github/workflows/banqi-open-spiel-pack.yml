@@ -1,7 +1,7 @@
 name: Banqi OpenSpiel Offline Pack
 
 on:
-  push:
+  pull_request:
     branches: [ banqi-open-spiel-pack-20260826 ]
   workflow_dispatch:
 
