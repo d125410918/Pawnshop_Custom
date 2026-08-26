@@ -1,0 +1,64 @@
+name: Banqi OpenSpiel Offline Pack
+
+on:
+  push:
+    branches: [ banqi-open-spiel-pack-20260826 ]
+  workflow_dispatch:
+
+jobs:
+  pack:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            py: '3.13'
+            artifact: open-spiel-win-py313
+          - os: ubuntu-latest
+            py: '3.13'
+            artifact: open-spiel-linux-py313
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Download wheel
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          mkdir -p dist
+          python -m pip download --only-binary=:all: --no-deps open_spiel==2.0.2 -d dist
+      - name: Install OpenSpiel
+        shell: bash
+        run: |
+          python -m pip install --no-index --find-links dist open_spiel==2.0.2
+      - name: Smoke Banqi
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pyspiel
+          game = pyspiel.load_game('banqi')
+          state = game.new_initial_state()
+          assert game.num_distinct_actions() == 1056
+          assert len(state.legal_actions()) == 32
+          state.apply_action(0)
+          outcomes = state.chance_outcomes()
+          assert len(outcomes) == 14
+          assert abs(sum(p for _, p in outcomes) - 1.0) < 1e-12
+          print('OPEN_SPIEL_VERSION=2.0.2')
+          print('BANQI_ACTIONS=', game.num_distinct_actions())
+          print('INITIAL_FLIPS=32')
+          print('CHANCE_OUTCOMES=', len(outcomes))
+          PY
+      - name: Hash wheel
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib
+          for path in pathlib.Path('dist').glob('open_spiel-2.0.2-*.whl'):
+              print(path.name, hashlib.sha256(path.read_bytes()).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/open_spiel-2.0.2-*.whl
+          if-no-files-found: error
